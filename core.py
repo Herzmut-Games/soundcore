@@ -54,7 +54,7 @@ def on_message(client, userdata, msg):
 
         # spotify status
         if (str(msg.topic) == "spotify/status"):
-            spotify_status = str(msg.payload)
+            spotify_status = str(msg.payload.decode('utf-8'))
 
 
     except Exception as e:
@@ -62,9 +62,9 @@ def on_message(client, userdata, msg):
 
 def play_random_sound(list):
     global spotify_status
-    if spotify_status != stop:
-        print("not playing sound because spotify is playing")
-        return
+#    if spotify_status != stop:
+#        print("not playing sound because spotify is playing")
+#        return
     sound = random.choice(list)
     print("playing sound "+sound)
     pygame.mixer.music.load(sound)
