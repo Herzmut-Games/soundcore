@@ -11,63 +11,31 @@ goalsounddir        = sounddir+"/goal"
 firstgoalsounddir   = sounddir+"/firstgoal"
 startsounddir       = sounddir+"/start"
 endsounddir         = sounddir+"/end"
+deniedsounddir      = sounddir+"/denied"
 
 GOALSOUNDS         = glob.glob(goalsounddir+"/*.mp3")
 FIRSTGOALSOUNDS    = glob.glob(firstgoalsounddir+"/*.mp3")
 STARTSOUNDS        = glob.glob(startsounddir+"/*.mp3") 
-ENDSOUNDS          = glob.glob(endsounddir+"/*.mp3") 
+ENDSOUNDS          = glob.glob(endsounddir+"/*.mp3")
+DENIEDSOUNDS       = glob.glob(deniedsounddir+"/*.mp3")
 
-score_red = 0
-score_white = 0
 spotify_status = "stop"
 
 def on_connect(client, userdata, flags, rc):
     print("Connected to mqtt with result code " + str(rc))
-    client.subscribe("score/white")
-    client.subscribe("score/red")
-    client.subscribe("game/end")
     client.subscribe("sound/volume")
     client.subscribe("sound/play")
     client.subscribe("spotify/status")
 
 def on_message(client, userdata, msg):
     #print("message on "+str(msg.topic)+" payload "+str(msg.payload.decode('utf-8')))
-    global score_red, score_white, spotify_status
+    global spotify_status
     try:
         # volume
         if (str(msg.topic) == "sound/volume"):
             m = alsaaudio.Mixer('PCM')
             print("set volume to "+str(msg.payload.decode('utf-8')))
             m.setvolume(int(msg.payload.decode('utf-8')))
-            return
-        # set score
-        if (str(msg.topic) == "score/red"):
-            if (str(msg.payload.decode('utf-8')) == str(score_red)):
-                print("red is already "+str(score_red))
-                return
-            else:
-                score_red = int(msg.payload.decode('utf-8'))
-                print("set score for red to: "+msg.payload.decode('utf-8'))
-        if (str(msg.topic) == "score/white"):
-            if (str(msg.payload.decode('utf-8')) == str(score_white)):
-                print("white is already:"+str(score_white))
-                return
-            else:
-                score_white = msg.payload.decode('utf-8')
-                print("set score for white to: "+msg.payload.decode('utf-8'))   
-
-        # return if reset
-        if (str(msg.topic) == "score/red" and int(score_red) == 0):
-            return
-        if (str(msg.topic) == "score/white" and int(score_white) == 0):
-            return
-
-        # firstblood
-        if (int(score_white)+int(score_red) == 1):
-            play_random_sound(FIRSTGOALSOUNDS)
-            return
-        if (str(msg.topic) == "game/end"):
-            play_random_sound(ENDSOUNDS)
             return
 
         #custom play
@@ -80,10 +48,9 @@ def on_message(client, userdata, msg):
                 play_random_sound(FIRSTGOALSOUNDS)
             elif str(msg.payload.decode('utf-8')) == "start":
                 play_random_sound(STARTSOUNDS)
+            elif str(msg.payload.decode('utf-8')) == "denied":
+                play_random_sound(DENIEDSOUNDS)
             return
-        #goal sound
-        if (str(msg.topic) == "score/white" or str(msg.topic) == "score/red"):
-            play_random_sound(GOALSOUNDS)
 
         # spotify status
         if (str(msg.topic) == "spotify/status"):
