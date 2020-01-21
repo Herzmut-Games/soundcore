@@ -26,15 +26,14 @@ def on_message(client, userdata, msg):
         #custom play
         if (str(msg.topic) == "sound/play"):
             if "/" in str(msg.payload.decode('utf-8')):
-                dir = sounddir+"/"+str(msg.payload.decode('utf-8'))
-                if os.path.isdir(dir):
-                    play_sound(dir+"/"+random.choice(os.listdir(dir)))
+                sound = sounddir+"/"+str(msg.payload.decode('utf-8'))
+                if os.path.isfile(sound):
+                    print("play requested sound "+sound)
+                    play_sound(sound)
                 else:
-                    print("sound "+str(msg.payload.decode('utf-8'))+" doesn't exist")
+                    print("sound "+sound+" doesn't exist")
             else:
-                category = random.choice(os.listdir(sounddir+"/"+msg.payload.decode('utf-8')))
-                sound = random.choice(os.listdir(sounddir+"/"+msg.payload.decode('utf-8')+"/"+category))
-                play_sound(sounddir+"/"+msg.payload.decode('utf-8')+"/"+category+"/"+sound)
+                play_sound(sounddir+"/"+msg.payload.decode('utf-8')+"/"+random.choice(os.listdir(sounddir+"/"+msg.payload.decode('utf-8'))))
             return
 
     except Exception as e:
