@@ -7,7 +7,7 @@ import random
 import alsaaudio
 
 sounddir = "/home/pi/git/soundcore/sounds"
-
+stalesounds = []
 def on_connect(client, userdata, flags, rc):
     print("Connected to mqtt with result code " + str(rc))
     client.subscribe("sound/volume")
@@ -33,7 +33,13 @@ def on_message(client, userdata, msg):
                 else:
                     print("sound "+sound+" doesn't exist")
             else:
-                play_sound(sounddir+"/"+msg.payload.decode('utf-8')+"/"+random.choice(os.listdir(sounddir+"/"+msg.payload.decode('utf-8'))))
+                soundlist = os.listdir(sounddir+"/"+msg.payload.decode('utf-8'))
+                soundlist = list(set(soundlist)-set(stalesounds))
+                sound = random.choice(soundlist)
+                if len(stalesounds) == 10:
+                    stalesounds.pop(0)
+                stalesounds.append(sound)
+                play_sound(sounddir+"/"+msg.payload.decode('utf-8')+"/"+sound)
             return
 
     except Exception as e:
