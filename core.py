@@ -6,7 +6,7 @@ import pygame
 import random
 import alsaaudio
 
-sounddir = "/app/sounds"
+sounddir = "/home/pi/git/soundcore/sounds"
 stalesounds = []
 def on_connect(client, userdata, flags, rc):
     print("Connected to mqtt with result code " + str(rc))
