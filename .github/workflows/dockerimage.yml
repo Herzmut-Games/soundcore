@@ -1,0 +1,16 @@
+name: Docker Image CI
+
+on: [push]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag kickrme/soundcore:$(date +%s)
+    - name: Push the Image
+      run: docker push kickrme/soundcore:$(date +%s)
