@@ -33,13 +33,13 @@ def on_message(client, userdata, msg):
                 else:
                     print("sound "+sound+" doesn't exist")
             else:
-                soundlist = os.listdir(sounddir+"/"+msg.payload.decode('utf-8'))
+                soundlist = glob.glob(os.path.join(sounddir+"/"+msg.payload.decode('utf-8'), '*'))
                 soundlist = list(set(soundlist)-set(stalesounds))
                 sound = random.choice(soundlist)
                 if len(stalesounds) == 10:
                     stalesounds.pop(0)
                 stalesounds.append(sound)
-                play_sound(sounddir+"/"+msg.payload.decode('utf-8')+"/"+sound)
+                play_sound(sound)
             return
 
     except Exception as e:
