@@ -18,9 +18,13 @@ def on_message(client, userdata, msg):
     try:
         # volume
         if (str(msg.topic) == "sound/volume"):
-            m = alsaaudio.Mixer('PCM')
-            print("set volume to "+str(msg.payload.decode('utf-8')))
-            m.setvolume(int(msg.payload.decode('utf-8')))
+            vol = int(msg.payload.decode('utf-8'))
+            m = alsaaudio.Mixer("Headphone")
+            if vol > 100 or vol < 0:
+                print("volume not valid:"+str(vol))
+                return
+            m.setvolume(vol)
+            print("set volume to "+str(vol))
             return
 
         #custom play
